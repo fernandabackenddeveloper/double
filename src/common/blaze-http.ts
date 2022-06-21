@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { config } from './config';
+import { config } from '../config';
 
 export const blazeHttp = axios.create({
   baseURL: config.BLAZE_API_URL,

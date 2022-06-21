@@ -1,4 +1,4 @@
-import bets from '../bets.json';
+import bets from '../../../bets.json';
 
 type Seed = {
   id: string;
