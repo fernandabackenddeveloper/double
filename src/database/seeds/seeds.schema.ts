@@ -1,7 +1,7 @@
 import * as Mongoose from "mongoose";
 
 const SeedSchema = new Mongoose.Schema({
-  id: String,
+  externalId: String,
   created_at: Date,
   color: Number,
   roll: Number,

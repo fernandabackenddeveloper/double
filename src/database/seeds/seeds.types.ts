@@ -1,6 +1,7 @@
 import { Document, Model } from "mongoose";
 
 export interface ISeed {
+  externalId: string;
   created_at: Date;
   color: number;
   roll: number;

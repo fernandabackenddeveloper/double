@@ -6,14 +6,16 @@ export const blazeHttp = axios.create({
   responseType: 'json'
 });
 
+export type RecordHistory = {
+  id: string,
+  created_at: Date,
+  color: number,
+  roll: number,
+  server_seed: string
+};
+
 export type BlazeDoubleHistory = {
-  records: {
-    id: string,
-    created_at: Date,
-    color: number,
-    roll: number,
-    server_seed: string
-  }[];
+  records: RecordHistory[];
 };
 
 export type BlazeDoubleHistoryDetail = {
