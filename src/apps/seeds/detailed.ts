@@ -1,20 +1,20 @@
 import { blazeHttp, BlazeDoubleHistory, BlazeDoubleHistoryDetail, RecordHistory  } from '../../common/blaze-http';
-import { ISeed } from '../../database/seeds/seeds.types';
-import { SeedModel } from '../../database/seeds/seeds.model';
+import { ISeedDetailed } from '../../database/seeds-detailed/seeds-detailed.types';
+import { SeedDetailedModel } from '../../database/seeds-detailed/seeds-detailed.model'
 
 export async function handler() {
-  const insertedSeeds = await generateSeeds();
+  const insertedNewSeeds = await generateDetailedSeeds();
 
-  if (insertedSeeds) {
+  if (insertedNewSeeds) {
     // TODO: Genereate new analysis 
   }
 }
 
-async function generateAnalysis() {
+async function generateDetailedAnalysis() {
 
 }
 
-async function generateSeeds() {
+async function generateDetailedSeeds() {
   console.log('Starting seeds generation!');
 
   const { data: { records } } = await blazeHttp.get<BlazeDoubleHistory>('roulette_games/recent/history', {
@@ -23,9 +23,9 @@ async function generateSeeds() {
     }
   });
 
-  const filteredRecords = await filterNonSavedRecords(records);
+  const filteredRecords = await filterNonSavedDetailedRecords(records);
 
-  const seeds: ISeed[] = [];
+  const seeds: ISeedDetailed[] = [];
 
   for await (const record of filteredRecords) {
     console.log(`Getting record ${record.id}`);
@@ -55,25 +55,25 @@ async function generateSeeds() {
     }
   }
 
-  await Promise.all(seeds.map(saveSeeds));
+  await Promise.all(seeds.map(saveDetailedSeeds));
 
   return seeds;
 }
 
-async function saveSeeds(seed: ISeed) {
+async function saveDetailedSeeds(seed: ISeedDetailed) {
   console.log(`Generating mongodb seed ${seed.externalId}`);
 
-  const mongoSeed = new SeedModel(seed);
+  const mongoSeed = new SeedDetailedModel(seed);
 
   await mongoSeed.save();
 }
 
-async function getSortedDateSeeds() {
-  return await SeedModel.find({}).sort({ created_at: 'descending' }).limit(10);
+async function getSortedDateDetailedSeeds() {
+  return await SeedDetailedModel.find({}).sort({ created_at: 'descending' }).limit(10);
 }
 
-async function filterNonSavedRecords(records: RecordHistory[]) {
-  const savedSeeds = await getSortedDateSeeds();
+async function filterNonSavedDetailedRecords(records: RecordHistory[]) {
+  const savedSeeds = await getSortedDateDetailedSeeds();
   const mappedSavedExternalIds = savedSeeds.map(seed => seed.externalId);
 
   return records.filter(record => !mappedSavedExternalIds.includes(record.id));
