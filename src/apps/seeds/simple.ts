@@ -3,15 +3,20 @@ import { blazeHttp, BlazeDoubleHistory } from '../../common/blaze-http';
 import { ISeed } from '../../database/seeds/seeds.types';
 import { SeedModel } from '../../database/seeds/seeds.model';
 
-import { IAnalysis } from '../../database/analysis/analysis.types';
 import { AnalysisModel } from '../../database/analysis/analysis.model';
 
-export async function handler() {
-  const insertedSeeds = await generateSimpleSeeds();
+import { producer } from '../../libs/rabbitmq';
 
-  if (insertedSeeds.length) {
-    await generateSimpleAnalysis();
-  }
+const queue = 'simple.seed';
+
+
+export async function handler() {
+  await generateSimpleAnalysis();
+
+  // const insertedSeeds = await generateSimpleSeeds();
+
+  // if (insertedSeeds.length) {
+  // }
 }
 
 async function generateSimpleAnalysis() {
@@ -19,13 +24,13 @@ async function generateSimpleAnalysis() {
   const analysis = new AnalysisModel({ seeds });
   await analysis.save();
 
-  // TODO: Generate message to call analysis services
+  await producer(queue, analysis);
 }
 
 async function generateSimpleSeeds() {
   console.log('Starting simple seeds generation!');
 
-  const pages = [ ...Array(20).keys() ];
+  const pages = [ ...Array(1).keys() ];
 
   const responses = await Promise.all(pages.map(page => blazeHttp.get<BlazeDoubleHistory>('roulette_games/recent/history', {
     params: {
@@ -34,8 +39,6 @@ async function generateSimpleSeeds() {
   })));
 
   const seeds = responses.flatMap(response => response.data.records.map(record => ({ ...record, externalId: record.id })));
-
-  console.log(seeds);
 
   const filteredSeeds = await filterNonSavedSimpleRecords(seeds);
 

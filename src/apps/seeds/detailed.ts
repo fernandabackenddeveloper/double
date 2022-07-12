@@ -2,6 +2,7 @@ import { blazeHttp, BlazeDoubleHistory, BlazeDoubleHistoryDetail, RecordHistory 
 import { ISeedDetailed } from '../../database/seeds-detailed/seeds-detailed.types';
 import { SeedDetailedModel } from '../../database/seeds-detailed/seeds-detailed.model'
 
+
 export async function handler() {
   const insertedNewSeeds = await generateDetailedSeeds();
 
